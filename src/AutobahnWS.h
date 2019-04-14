@@ -18,7 +18,7 @@ public:
     void on_join(t_cb cb);
     
 	WebSocketsClient *_client;
-	t_cb onjoin_cb;
+	t_cb onjoin_cb = nullptr;
 };
 
 void AutobahnWS::begin(WebSocketsClient &client,const char *host, uint16_t port,   char * realm, const char * url ,const char * protocol){
@@ -69,7 +69,8 @@ void AutobahnWS::on_join(t_cb cb){
 }  
 void AutobahnWS::notify_welcome(){
     Serial.printf("on_join!\n");
-    onjoin_cb();
+    if( onjoin_cb != nullptr)
+		onjoin_cb();
 }  
 
 void AutobahnWS::loop(){
