@@ -37,17 +37,3 @@ Open the .ino file from the Arduino IDE, Configure the Wifi credentials, IP addr
 
 [https://github.com/codelectron/autobahn-arduino/tree/master/examples/esp32](https://github.com/codelectron/autobahn-arduino/tree/master/examples/esp32)
 
-## Publish example 
-
-
-```mermaid
-sequenceDiagram
-ESP32 ->> Crossbar.io: join 
-ABPy ->> Crossbar.io: join 
-Crossbar.io-->>ABPy: Subsribed to  topic com.myapp.topic1 
-ESP32 ->> Crossbar.io: Publish to com.myapp.topic1
-Crossbar.io-->>ABPy: Receive from topic com.myapp.topic1 
-ESP32 ->> Crossbar.io: Publish to com.myapp.topic1
-Crossbar.io-->>ABPy: Receive from topic com.myapp.topic1 
-
-```
