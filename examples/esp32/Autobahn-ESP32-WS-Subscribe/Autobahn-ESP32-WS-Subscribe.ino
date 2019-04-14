@@ -3,8 +3,8 @@
 #include <AutobahnWS.h>
 
 
-char ssid[] = "CodeMonkey";
-char pass[] = "#!some$$passnotmyphrase";
+char ssid[] = "";
+char pass[] = "";
 WebSocketsClient client1;
 AutobahnWS abc;
 
