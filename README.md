@@ -28,7 +28,7 @@ Select Arduinojson by Benoit Blachon version 5.13.2 (Note that beta 6 version wi
 Select Websocket by Markus sattlet version 2.1.1
 
 ## Dowload the Autobahn source:
-[https://github.com/codelectron/autobahn-arduino/](https://github.com/codelectron/autobahn-arduino/)
+git clone https://github.com/codelectron/autobahn-arduino
 ## Install Autobahn:
 mkdir -p $HOME/Arduino/libraries/Autobahn/
 cp -a autobahn-arduino/src/* $HOME/Arduino/libraries/Autobahn/
