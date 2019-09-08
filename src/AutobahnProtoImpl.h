@@ -8,11 +8,11 @@
 #include "Params.h"
 
 typedef std::map<int, std::string > PubTable;
-class cautobahnproto_impl{
+class AutobahnProtoImpl{
 	
 public:
-    cautobahnproto_impl(){};
-    ~cautobahnproto_impl(){};
+    AutobahnProtoImpl(){};
+    ~AutobahnProtoImpl(){};
 	void on_abort(uint8_t * payload, size_t length);
     void on_goodbye(uint8_t * payload, size_t length);
     void on_welcome(uint8_t * payload, size_t length);
@@ -66,12 +66,12 @@ public:
 		publish_table.insert(std::make_pair(reqId, std::string(topic)));
 	}	
 };
-void cautobahnproto_impl::wampstatemachine(uint8_t * payload, size_t length){
+void AutobahnProtoImpl::wampstatemachine(uint8_t * payload, size_t length){
 	_wampstate = this->_parser.get_message_type(payload);
 	wampstatemachine(_wampstate,payload,length);
 }
 
-void cautobahnproto_impl::wampstatemachine(e_message_codes wampstate,uint8_t * payload, size_t length){
+void AutobahnProtoImpl::wampstatemachine(e_message_codes wampstate,uint8_t * payload, size_t length){
 
 	 switch(wampstate)	 {
 		case WAMP_MSGCODE_HELLO:
@@ -137,70 +137,70 @@ void cautobahnproto_impl::wampstatemachine(e_message_codes wampstate,uint8_t * p
 	 }
 }
 
-bool cautobahnproto_impl::is_connected(){
+bool AutobahnProtoImpl::is_connected(){
 	return this->_session._connected;
 }
 
-int cautobahnproto_impl::generate_request_id(){
+int AutobahnProtoImpl::generate_request_id(){
     return rand();
 }
-void  cautobahnproto_impl::send_hello(const char * topic){
+void  AutobahnProtoImpl::send_hello(const char * topic){
 	send_towire(_parser.get_hello(topic));
 }
 
-void  cautobahnproto_impl::on_welcome(uint8_t * payload, size_t length){
+void  AutobahnProtoImpl::on_welcome(uint8_t * payload, size_t length){
 	this->_session._sessionId = _parser.getsessionID(( char *)payload);
   	this->_session._connected = true;
   	notify_welcome();
 
 }
-void  cautobahnproto_impl::on_abort(uint8_t * payload, size_t length){
+void  AutobahnProtoImpl::on_abort(uint8_t * payload, size_t length){
 }
 
-void  cautobahnproto_impl::on_goodbye(uint8_t * payload, size_t length){
+void  AutobahnProtoImpl::on_goodbye(uint8_t * payload, size_t length){
 }
 
-void  cautobahnproto_impl::on_errormsg(uint8_t * payload, size_t length){
+void  AutobahnProtoImpl::on_errormsg(uint8_t * payload, size_t length){
 }
 
-void  cautobahnproto_impl::on_published(uint8_t * payload, size_t length){
+void  AutobahnProtoImpl::on_published(uint8_t * payload, size_t length){
 	int var = _parser.getrequestID(payload);	
 	this->_session.del_publish_record(var);
 }  
- void  cautobahnproto_impl::on_subscribed(uint8_t * payload, size_t length){     
+ void  AutobahnProtoImpl::on_subscribed(uint8_t * payload, size_t length){     
 	 std::string subid = _parser.get_subscription_id_str(payload);
      int reqid = _parser.get_subscribe_request_id(payload);
 	 this->_session.add_subscribe_record(reqid,subid);	
 }
  
 
-void  cautobahnproto_impl::on_unsubscribed(uint8_t * payload, size_t length){
+void  AutobahnProtoImpl::on_unsubscribed(uint8_t * payload, size_t length){
 }
  
 
-void  cautobahnproto_impl::on_event(uint8_t * payload, size_t length){
+void  AutobahnProtoImpl::on_event(uint8_t * payload, size_t length){
 	std::string reqId = _parser.get_subscribe_request_id_str( payload);
 	const char* buf = _parser.geteventpayload(payload);
 	sub_param.storeData(const_cast<char*>(buf));
 	t_wamp_cb cb = _session.get_subscribe_cb(reqId);
   	cb((wamp_param  *)&sub_param );
 } 
- void cautobahnproto_impl::on_result(uint8_t * payload,size_t length){
+ void AutobahnProtoImpl::on_result(uint8_t * payload,size_t length){
  	const char* buf = _parser.geteventpayload_rpc(payload);
     rpc_param.storeData(const_cast<char*>(buf));  	
      _session._rpcresult = true;
 }  
  
-void  cautobahnproto_impl::on_registered(uint8_t * payload, size_t length){
+void  AutobahnProtoImpl::on_registered(uint8_t * payload, size_t length){
 	 std::string regnid = _parser.get_registration_id_str(payload);
      int reqid = _parser.get_register_id(payload);
 	 this->_session.add_rpc_record(reqid,regnid);
 }
-void  cautobahnproto_impl::on_unregistered(uint8_t * payload, size_t length){
+void  AutobahnProtoImpl::on_unregistered(uint8_t * payload, size_t length){
 
 	
 }
-void  cautobahnproto_impl::on_invocation(uint8_t * payload, size_t length){
+void  AutobahnProtoImpl::on_invocation(uint8_t * payload, size_t length){
 	
 	std::string reqId = _parser.get_register_id_str( payload);
 	std::string regId = _parser.get_registration_id_str( payload);
@@ -215,13 +215,13 @@ void  cautobahnproto_impl::on_invocation(uint8_t * payload, size_t length){
 	send_towire( _parser.get_result(reqId,rpc_param.asString()));
 
 }
-void  cautobahnproto_impl::return_call(wamp_param  * message)
+void  AutobahnProtoImpl::return_call(wamp_param  * message)
 { 
 }
  
 
 template <typename... Args>  
-void cautobahnproto_impl::publish(const char * topic,Args... values){
+void AutobahnProtoImpl::publish(const char * topic,Args... values){
 	pub_param.reset();
 	pub_param.add(values...);   
 	int reqId = generate_request_id();
@@ -229,40 +229,40 @@ void cautobahnproto_impl::publish(const char * topic,Args... values){
 	send_towire( _parser.get_publish(reqId,topic, tmp));		
 }
 
-void cautobahnproto_impl::subscribe(const char * topic, t_wamp_cb cb){
+void AutobahnProtoImpl::subscribe(const char * topic, t_wamp_cb cb){
 	
 	int reqId = generate_request_id();
 	this->_session.add_temp_subscribe_record(reqId, topic, cb);		
     send_towire( _parser.get_subscribe(reqId,topic));
 } 
-void cautobahnproto_impl::unsubscribe(const char * topic){
+void AutobahnProtoImpl::unsubscribe(const char * topic){
 	char buffer[512];  // TODO reimplement
 	std::string subid = this->_session.unsubscribe(topic);
 	int reqId = generate_request_id();
 	send_towire(_parser.get_unsubscribe(reqId,subid));
 } 
 
-bool cautobahnproto_impl::is_subscribed(const char * topic){
+bool AutobahnProtoImpl::is_subscribed(const char * topic){
 	return this->_session.is_subscribed(topic);
 } 
-void cautobahnproto_impl::rpc_register(const char * topic, t_wamp_cb cb){
+void AutobahnProtoImpl::rpc_register(const char * topic, t_wamp_cb cb){
     int reqId = generate_request_id();
     
 	this->_session.add_temp_rpc_record(reqId, topic, cb);
 	send_towire(_parser.get_rpc_register(reqId,topic));		
 }
-wamp_param * cautobahnproto_impl::rpc_call(const char * topic){
+wamp_param * AutobahnProtoImpl::rpc_call(const char * topic){
 	return rpc_call(topic,nullptr);
 }
 
-wamp_param * cautobahnproto_impl::rpc_call_async(const char * topic,t_cb cb){
+wamp_param * AutobahnProtoImpl::rpc_call_async(const char * topic,t_cb cb){
 	return rpc_call_async(topic,cb,nullptr);
 }
 
 template <typename... Args>  
-wamp_param * cautobahnproto_impl::rpc_call_async(const char * topic,t_cb cb,Args... values){
+wamp_param * AutobahnProtoImpl::rpc_call_async(const char * topic,t_cb cb,Args... values){
 	rpc_param.reset();
-	int breakout_counter = 0;
+	// int breakout_counter = 0;
 	char * tmp;
 	if(sizeof...(values) != 0)	{
 	    rpc_param.add(values...);
@@ -275,10 +275,11 @@ wamp_param * cautobahnproto_impl::rpc_call_async(const char * topic,t_cb cb,Args
 	
     //this->_session.add_publish_record(reqId, topic);
 	send_towire( _parser.get_rpccall(reqId,topic, tmp));	
+		return &rpc_param;
 }
 
 template <typename... Args>  
-wamp_param * cautobahnproto_impl::rpc_call(const char * topic,Args... values){
+wamp_param * AutobahnProtoImpl::rpc_call(const char * topic,Args... values){
 	
 	rpc_param.reset();
 	int breakout_counter = 0;

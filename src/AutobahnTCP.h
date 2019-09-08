@@ -20,29 +20,29 @@ class AutobahnTCP: public AutobahnProtoImpl{
 public:	
     AutobahnTCP(){};
     ~AutobahnTCP(){};
-	void begin(WiFiClient &client,const char *host, uint16_t port,   char * realm, const char * url = "/",const char * protocol = "wamp.2.json");
-	void beginssl(WiFiClient &client,const char *host, uint16_t port,   char * realm, const char * url = "/",const char * protocol = "wamp.2.json");
+	void begin(EthernetClient &client,const char *host, uint16_t port,   char * realm, const char * url = "/",const char * protocol = "wamp.2.json");
+	void beginssl(EthernetClient &client,const char *host, uint16_t port,   char * realm, const char * url = "/",const char * protocol = "wamp.2.json");
 	void webSocketEvent(WStype_t type, uint8_t * payload, size_t length);
 	virtual void send_towire(const char * payload);
     virtual void loop();
     void  send_header();
 
-	WiFiClient *_client;
+	EthernetClient *_client;
 };
 
-void AutobahnTCP::begin(WiFiClient &client,const char *host, uint16_t port,   char * realm, const char * url ,const char * protocol){
-    Serial.printf("[Soc] begin 1!\n");
+void AutobahnTCP::begin(EthernetClient &client,const char *host, uint16_t port,   char * realm, const char * url ,const char * protocol){
+    core_debug("[Soc] begin 1!\n");
 	this->_client = &client;
-    Serial.printf("[Soc] begin 2!\n");	
+    core_debug("[Soc] begin 2!\n");	
 	this->setrealm(realm);
-    Serial.printf("[Soc] begin 3!\n");	
+    core_debug("[Soc] begin 3!\n");	
 	if( this->_client->connect(host, port)){
 		 this->_session._connected = true;
    	     webSocketEvent(WStype_CONNECTED,NULL,0);
 	}
-    Serial.printf("[Soc] begin 4!\n");	
+    core_debug("[Soc] begin 4!\n");	
 }
-void AutobahnTCP::beginssl(WiFiClient &client,const char *host, uint16_t port,   char * realm, const char * url ,const char * protocol){
+void AutobahnTCP::beginssl(EthernetClient &client,const char *host, uint16_t port,   char * realm, const char * url ,const char * protocol){
 #if 0
     using namespace std::placeholders; // for `_1`
 	this->_client = &client;
@@ -54,16 +54,16 @@ void AutobahnTCP::beginssl(WiFiClient &client,const char *host, uint16_t port,  
 
 }
 void AutobahnTCP::webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
-   Serial.printf("Event: webSocketEvent %d %d  !\n",type, length);        
+   core_debug("Event: webSocketEvent %d %d  !\n",type, length);        
 
     switch(type) {
         case WStype_DISCONNECTED:
 		//_websocketstate = type;
 	 	this->_session._connected =false;
-        Serial.printf("[Soc] Disconnected!\n");
+        core_debug("[Soc] Disconnected!\n");
         break;
         case WStype_CONNECTED:
-	      Serial.printf("[Soc] WStype_CONNECTED!\n");		  
+	      core_debug("[Soc] WStype_CONNECTED!\n");		  
 		  send_header();
 		  this->wampstatemachine(WAMP_MSGCODE_HELLO,payload,length);
         break;
@@ -83,18 +83,18 @@ void AutobahnTCP::send_header(){
 	for(int c = 0; c < 300; c++){
 		delay(25);
 		len = this->_client->available();
-		Serial.printf("[loop] %d!\n",len);
+		core_debug("[loop] %d!\n",len);
 		if(len > 0)
 		    break;
 	}	
     
     for ( int c = 0; c < len; c++){
-	  Serial.printf("[read loop] %x!\n",this->_client->read());
+	  core_debug("[read loop] %x!\n",this->_client->read());
     }
 
 }
 void AutobahnTCP::send_towire(const char * payload){
-   Serial.printf("[WSc] send_towire %s!\n",payload);
+   core_debug("[WSc] send_towire %s!\n",payload);
    this->_client->write(payload);   
 }  
 void AutobahnTCP::loop(){
